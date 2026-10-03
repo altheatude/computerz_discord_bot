@@ -10,3 +10,4 @@ add_executable(bot
 )
 
 target_include_directories(bot PRIVATE include/laserpants/dotenv)
+target_link_libraries(bot PRIVATE dpp)
