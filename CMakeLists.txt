@@ -9,5 +9,7 @@ add_executable(bot
     src/main.cpp
 )
 
+find_package(dpp CONFIG REQUIRED)
+
 target_include_directories(bot PRIVATE include/laserpants/dotenv)
-target_link_libraries(bot PRIVATE dpp)
+target_link_libraries(bot PRIVATE dpp::dpp)
