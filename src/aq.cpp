@@ -15,7 +15,10 @@ const Command quote_command = {
         // Extract parameter
         std::string text = std::get<std::string>(event.get_parameter("text"));
         std::string author = std::get<std::string>(event.get_parameter("author"));
-
+        
+        dpp::message msg(dotenv::getenv("QUOTES_CID"), "\"" + text + "\"\n\\- " + author);
+        g_bot->message_create(msg);
+        
         // confirmation message to user that the quote was added
         event.reply("Quote added:\n\"" + text + "\"\n\\- " + author);
     },

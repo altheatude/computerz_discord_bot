@@ -1,5 +1,8 @@
 #pragma once
 #include <dpp/dpp.h>
+#include "dotenv.h"
+
+extern dpp::cluster* g_bot;
 
 struct Command {
     std::string name;

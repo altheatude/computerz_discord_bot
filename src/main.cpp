@@ -3,12 +3,18 @@
 #include <iostream>
 #include "aq.h"
 
+// const std::string BOT_TOKEN = std::getenv("BOT_TOKEN");
+// dpp::cluster bot(BOT_TOKEN);
+
+dpp::cluster* g_bot = nullptr;
+
 int main()
 {
     dotenv::init("../.env");
     const std::string BOT_TOKEN = dotenv::getenv("BOT_TOKEN");
 
     dpp::cluster bot(BOT_TOKEN);
+    g_bot = &bot; // Store global reference
 
     bot.on_log(dpp::utility::cout_logger());
 
@@ -33,7 +39,7 @@ int main()
         for (const auto &opt : cmd.options) {
             sc.add_option(opt);
         }
-
+        
         // Create a slash command to register with Discord in the s_c vector
         slash_commands.push_back(sc);
     }
