@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(bot
     src/main.cpp
     src/aq.cpp
+    src/weather.cpp
 )
 
 find_package(dpp CONFIG REQUIRED)

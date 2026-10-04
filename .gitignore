@@ -3,4 +3,5 @@
 *.o
 *.exe
 
+.vscode/
 build/
