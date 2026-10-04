@@ -25,8 +25,17 @@ int main()
     for (const auto &cmd : all_commands) {
         // Match the command name to its handler in c_h map
         command_handlers[cmd.name] = cmd.handler;
+
+        // Create a slash command with the command's name and description
+        dpp::slashcommand sc(cmd.name, cmd.description, bot.me.id);
+
+        // Loop through the command's options and add them to the slash command (sc)
+        for (const auto &opt : cmd.options) {
+            sc.add_option(opt);
+        }
+
         // Create a slash command to register with Discord in the s_c vector
-        slash_commands.push_back(dpp::slashcommand(cmd.name, cmd.description, bot.me.id));
+        slash_commands.push_back(sc);
     }
 
     // Runs the appropriate handler when a slash command is received
