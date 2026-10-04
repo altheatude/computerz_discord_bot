@@ -7,9 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(bot
     src/main.cpp
+    src/aq.cpp
 )
 
 find_package(dpp CONFIG REQUIRED)
 
-target_include_directories(bot PRIVATE include/laserpants/dotenv)
+target_include_directories(bot PRIVATE 
+    include/laserpants/dotenv
+    include 
+)
 target_link_libraries(bot PRIVATE dpp::dpp)
