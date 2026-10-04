@@ -16,11 +16,11 @@ const Command quote_command = {
         std::string text = std::get<std::string>(event.get_parameter("text"));
         std::string author = std::get<std::string>(event.get_parameter("author"));
         
-        dpp::message msg(dotenv::getenv("QUOTES_CID"), "\"" + text + "\"\n\\- " + author);
+        dpp::message msg(dotenv::getenv("QUOTES_CID"), "❝" + text + "❞\n\\- " + author);
         g_bot->message_create(msg);
         
         // confirmation message to user that the quote was added
-        event.reply("Quote added:\n\"" + text + "\"\n\\- " + author);
+        event.reply("Quote added:\n❝" + text + "❞\n\\- " + author);
     },
     {
         // Parameter list, for use in registering the slash command with Discord
