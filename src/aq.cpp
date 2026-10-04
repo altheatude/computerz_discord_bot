@@ -15,10 +15,12 @@ const Command quote_command = {
         // Extract parameter
         std::string text = std::get<std::string>(event.get_parameter("text"));
         std::string author = std::get<std::string>(event.get_parameter("author"));
+
+        // confirmation message to user that the quote was added
         event.reply("Quote added:\n\"" + text + "\"\n\\- " + author);
     },
     {
-        // Parameter list
+        // Parameter list, for use in registering the slash command with Discord
         dpp::command_option(dpp::co_string, "text", "The quote text", true),
         dpp::command_option(dpp::co_string, "author", "Author of the quote", true)
     }
