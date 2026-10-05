@@ -4,6 +4,7 @@
 
 // Purpose: Weather feature for the discord bot using the open meteo API
 // Documentation: https://open-meteo.com/en/docs
+// Name: Malcolm Trude / mactru
 
 // Translates weather code into readable format
 std::string getWeatherDescription(int weather_code)
@@ -96,6 +97,29 @@ std::string getWeatherEmoji(int weather_code)
     }
 }
 
+// Converts wind direction into readable format
+std::string getWindDirection(double degrees)
+{
+    {
+        if (degrees >= 337.5 || degrees < 22.5)
+            return "N";
+        else if (degrees < 67.5)
+            return "NE";
+        else if (degrees < 112.5)
+            return "E";
+        else if (degrees < 157.5)
+            return "SE";
+        else if (degrees < 202.5)
+            return "S";
+        else if (degrees < 247.5)
+            return "SW";
+        else if (degrees < 292.5)
+            return "W";
+        else
+            return "NW";
+    }
+}
+
 // Actual weather command itself
 const Command weather_command = 
 {
@@ -107,7 +131,8 @@ const Command weather_command =
             "https://api.open-meteo.com/v1/forecast?" 
             "latitude=44.2312&longitude=-76.4860" 
             "&current=temperature_2m,relative_humidity_2m," 
-            "apparent_temperature,weather_code,wind_speed_10m";
+            "apparent_temperature,weather_code,wind_speed_10m,"
+            "wind_direction_10m,precipitation";
 
         // Make the web request    
         g_bot->request 
@@ -125,18 +150,25 @@ const Command weather_command =
                 // Extracts all values from the JSON and gives them a variable
                 dpp::json weather_data = dpp::json::parse(response.body);
                 double temperature     = weather_data["current"]["temperature_2m"];
-                int    humidity        = weather_data["current"]["relative_humidity_2m"];
                 double feels_like      = weather_data["current"]["apparent_temperature"];
                 double wind_speed      = weather_data["current"]["wind_speed_10m"];
+                double wind_direction  = weather_data["current"]["wind_direction_10m"];
+                double precipitation   = weather_data["current"]["precipitation"];
+                int    humidity        = weather_data["current"]["relative_humidity_2m"];
                 int    weather_code    = weather_data["current"]["weather_code"];
 
                 // Convert the doubles to 1 decimal place
                 std::ostringstream temperature_text;
-                temperature_text << std::fixed << std::setprecision(1) << temperature;
+                temperature_text   << std::fixed << std::setprecision(1) << temperature;
                 std::ostringstream feels_like_text;
-                feels_like_text  << std::fixed << std::setprecision(1) << feels_like;
+                feels_like_text    << std::fixed << std::setprecision(1) << feels_like;
                 std::ostringstream wind_text;
-                wind_text        << std::fixed << std::setprecision(1) << wind_speed;
+                wind_text          << std::fixed << std::setprecision(1) << wind_speed;
+                std::ostringstream precipitation_text;
+                precipitation_text << std::fixed << std::setprecision(1) << precipitation;
+
+                // Store converted wind direction to its own variable
+                std::string wind_direction_text = getWindDirection(wind_direction);
 
                 // Making a weather code and emoji variable
                 std::string description = getWeatherDescription(weather_code);
@@ -147,10 +179,12 @@ const Command weather_command =
                 weather_embed
                     .set_title(emoji + " Kingston, Ontario Weather")
                     .set_description(description)
-                    .add_field("Temperature", temperature_text.str() + " °C", true)
-                    .add_field("Feels Like", feels_like_text.str() + " °C", true)
-                    .add_field("Humidity", std::to_string(humidity) + "%", true)
-                    .add_field("Wind", wind_text.str() + " km/h", true)
+                    .add_field("Temperature",   temperature_text.str()   + " °C",   true)
+                    .add_field("Feels Like",    feels_like_text.str()    + " °C",   true)
+                    .add_field("Humidity",      std::to_string(humidity) + "%",     true)
+                    .add_field("Wind",          wind_text.str()          + " km/h", true)
+                    .add_field("Direction",     wind_direction_text,                true)
+                    .add_field("Precipitation", precipitation_text.str() + " mm",   true)
                     .set_footer(dpp::embed_footer().set_text("Weather data provided by Open-Meteo"));
 
                 // Send the embed to Discord
