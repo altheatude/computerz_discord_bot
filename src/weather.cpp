@@ -1,5 +1,7 @@
 #include "aq.h"
 
+#include <iomanip>
+
 // Purpose: Weather feature for the discord bot using the open meteo API
 // Documentation: https://open-meteo.com/en/docs
 
@@ -42,11 +44,12 @@ std::string getWeatherDescription(int weather_code)
 }
 
 // Actual weather command itself
-const Command weather_command = {
+const Command weather_command = 
+{
     "weather",
     "Gets the weather in Kingston ON and puts it in chat",
-    [](const dpp::slashcommand_t& event) {
-    
+    [](const dpp::slashcommand_t& event) 
+    {
         const std::string url =
             "https://api.open-meteo.com/v1/forecast?" 
             "latitude=44.2312&longitude=-76.4860" 
@@ -54,7 +57,8 @@ const Command weather_command = {
             "apparent_temperature,weather_code,wind_speed_10m";
 
         // Make the web request    
-        g_bot->request (
+        g_bot->request 
+        (
             url,
             dpp::m_get,
             [event](const dpp::http_request_completion_t& response) 
@@ -65,24 +69,33 @@ const Command weather_command = {
                     return;
                 }
 
-                // Extract all values from the JSON
+                // Extracts all values from the JSON and gives them a variable
                 dpp::json weather_data = dpp::json::parse(response.body);
+                double temperature     = weather_data["current"]["temperature_2m"];
+                int    humidity        = weather_data["current"]["relative_humidity_2m"];
+                double feels_like      = weather_data["current"]["apparent_temperature"];
+                double wind_speed      = weather_data["current"]["wind_speed_10m"];
+                int    weather_code    = weather_data["current"]["weather_code"];
 
-                double temperature  = weather_data["current"]["temperature_2m"];
-                double humidity     = weather_data["current"]["relative_humidity_2m"];
-                double feels_like   = weather_data["current"]["apparent_temperature"];
-                double wind_speed   = weather_data["current"]["wind_speed_10m"];
-                int    weather_code = weather_data["current"]["weather_code"];
+                // Convert the doubles to 1 decimal place
+                std::ostringstream temperature_text;
+                temperature_text << std::fixed << std::setprecision(1) << temperature;
+                std::ostringstream feels_like_text;
+                feels_like_text  << std::fixed << std::setprecision(1) << feels_like;
+                std::ostringstream wind_text;
+                wind_text        << std::fixed << std::setprecision(1) << wind_speed;
 
+                // Gets the weather description
                 std::string description = getWeatherDescription(weather_code);
 
                 // What the bot outputs to discord
-                event.reply(
-                    "Temperature: " + std::to_string(temperature) + " C\n" + 
-                    "Humidity: " + std::to_string(humidity) + "%\n" +
-                    "Feels like: " + std::to_string(feels_like) + " C\n" + 
-                    "Wind: " + std::to_string(wind_speed) + " km/h\n" + 
-                    "Conditions: " + description
+                event.reply
+                (
+                    "Temperature: " + temperature_text.str() + " C\n" + 
+                    "Humidity: "    + std::to_string(humidity) + "%\n" +
+                    "Feels like: "  + feels_like_text.str() + " C\n" + 
+                    "Wind: "        + wind_text.str() + " km/h\n" + 
+                    "Conditions: "  + description
                 );
             }
         ); 
