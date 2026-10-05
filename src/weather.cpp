@@ -1,7 +1,47 @@
 #include "aq.h"
 
-// Purpose: Weather feature for the discord bot
+// Purpose: Weather feature for the discord bot using the open meteo API
+// Documentation: https://open-meteo.com/en/docs
 
+// Translates weather code into readable format
+std::string getWeatherDescription(int weather_code)
+{
+    switch (weather_code)
+    {
+        case 0:  return "Clear sky";
+        case 1:  return "Mainly clear";
+        case 2:  return "Partly cloudy";
+        case 3:  return "Overcast";
+        case 45: return "Fog";
+        case 48: return "Depositing rime fog";
+        case 51: return "Light drizzle";
+        case 53: return "Moderate drizzle";
+        case 55: return "Dense drizzle";
+        case 56: return "Light freezing drizzle";
+        case 57: return "Dense freezing drizzle";
+        case 61: return "Slight rain";
+        case 63: return "Moderate rain";
+        case 65: return "Heavy rain";
+        case 66: return "Light freezing rain";
+        case 67: return "Heavy freezing rain";
+        case 71: return "Slight snowfall";
+        case 73: return "Moderate snowfall";
+        case 75: return "Heavy snowfall";
+        case 77: return "Snow grains";
+        case 80: return "Slight rain showers";
+        case 81: return "Moderate rain showers";
+        case 82: return "Violent rain showers";
+        case 85: return "Slight snow showers";
+        case 86: return "Heavy snow showers";
+        case 95: return "Thunderstorm";
+        case 96: return "Thunderstorm with slight hail";
+        case 97: return "Heavy thunderstorm";
+        case 99: return "Thunderstorm with heavy hail";
+        default: return "Unknown weather condition";        
+    }
+}
+
+// Actual weather command itself
 const Command weather_command = {
     "weather",
     "Gets the weather in Kingston ON and puts it in chat",
@@ -25,7 +65,25 @@ const Command weather_command = {
                     return;
                 }
 
-                event.reply(response.body);
+                // Extract all values from the JSON
+                dpp::json weather_data = dpp::json::parse(response.body);
+
+                double temperature  = weather_data["current"]["temperature_2m"];
+                double humidity     = weather_data["current"]["relative_humidity_2m"];
+                double feels_like   = weather_data["current"]["apparent_temperature"];
+                double wind_speed   = weather_data["current"]["wind_speed_10m"];
+                int    weather_code = weather_data["current"]["weather_code"];
+
+                std::string description = getWeatherDescription(weather_code);
+
+                // What the bot outputs to discord
+                event.reply(
+                    "Temperature: " + std::to_string(temperature) + " C\n" + 
+                    "Humidity: " + std::to_string(humidity) + "%\n" +
+                    "Feels like: " + std::to_string(feels_like) + " C\n" + 
+                    "Wind: " + std::to_string(wind_speed) + " km/h\n" + 
+                    "Conditions: " + description
+                );
             }
         ); 
     }
