@@ -43,11 +43,64 @@ std::string getWeatherDescription(int weather_code)
     }
 }
 
+// Adds emoji functionality
+std::string getWeatherEmoji(int weather_code)
+{
+    switch (weather_code)
+    {
+        case 0:
+        case 1:
+            return "☀️";
+
+        case 2:
+        case 3:
+            return "☁️";
+
+        case 45:
+        case 48:
+            return "🌫️";
+
+        case 51:
+        case 53:
+        case 55:
+        case 56:
+        case 57:
+            return "🌦️";
+
+        case 61:
+        case 63:
+        case 65:
+        case 66:
+        case 67:
+        case 80:
+        case 81:
+        case 82:
+            return "🌧️";
+
+        case 71:
+        case 73:
+        case 75:
+        case 77:
+        case 85:
+        case 86:
+            return "❄️";
+
+        case 95:
+        case 96:
+        case 97:
+        case 99:
+            return "⛈️";
+
+        default:
+            return "🌡️";
+    }
+}
+
 // Actual weather command itself
 const Command weather_command = 
 {
     "weather",
-    "Gets the weather in Kingston ON and puts it in chat",
+    "Gets the weather in Kingston Ontario and puts it in chat",
     [](const dpp::slashcommand_t& event) 
     {
         const std::string url =
@@ -85,18 +138,20 @@ const Command weather_command =
                 std::ostringstream wind_text;
                 wind_text        << std::fixed << std::setprecision(1) << wind_speed;
 
-                // Gets the weather description
+                // Making a weather code and emoji variable
                 std::string description = getWeatherDescription(weather_code);
+                std::string emoji       = getWeatherEmoji(weather_code);
 
                 // Create the Discord mmbed
                 dpp::embed weather_embed;
                 weather_embed
-                    .set_title("🌤️ Kingston, Ontario Weather")
+                    .set_title(emoji + " Kingston, Ontario Weather")
                     .set_description(description)
                     .add_field("Temperature", temperature_text.str() + " °C", true)
                     .add_field("Feels Like", feels_like_text.str() + " °C", true)
                     .add_field("Humidity", std::to_string(humidity) + "%", true)
-                    .add_field("Wind", wind_text.str() + " km/h", true);
+                    .add_field("Wind", wind_text.str() + " km/h", true)
+                    .set_footer(dpp::embed_footer().set_text("Weather data provided by Open-Meteo"));
 
                 // Send the embed to Discord
                 dpp::message message;
