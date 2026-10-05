@@ -88,15 +88,20 @@ const Command weather_command =
                 // Gets the weather description
                 std::string description = getWeatherDescription(weather_code);
 
-                // What the bot outputs to discord
-                event.reply
-                (
-                    "Temperature: " + temperature_text.str() + " C\n" + 
-                    "Humidity: "    + std::to_string(humidity) + "%\n" +
-                    "Feels like: "  + feels_like_text.str() + " C\n" + 
-                    "Wind: "        + wind_text.str() + " km/h\n" + 
-                    "Conditions: "  + description
-                );
+                // Create the Discord mmbed
+                dpp::embed weather_embed;
+                weather_embed
+                    .set_title("🌤️ Kingston, Ontario Weather")
+                    .set_description(description)
+                    .add_field("Temperature", temperature_text.str() + " °C", true)
+                    .add_field("Feels Like", feels_like_text.str() + " °C", true)
+                    .add_field("Humidity", std::to_string(humidity) + "%", true)
+                    .add_field("Wind", wind_text.str() + " km/h", true);
+
+                // Send the embed to Discord
+                dpp::message message;
+                message.add_embed(weather_embed);
+                event.reply(message);
             }
         ); 
     }
