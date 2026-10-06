@@ -5,6 +5,8 @@
 // Purpose: Weather feature for the discord bot using the open meteo API
 // Documentation: https://open-meteo.com/en/docs
 // Name: Malcolm Trude / mactru
+// TODO: Refactor
+// TODO: Make it so the user can input specific cities they want
 
 // Translates weather code into readable format
 std::string getWeatherDescription(int weather_code)
@@ -100,24 +102,22 @@ std::string getWeatherEmoji(int weather_code)
 // Converts wind direction into readable format
 std::string getWindDirection(double degrees)
 {
-    {
-        if (degrees >= 337.5 || degrees < 22.5)
-            return "N";
-        else if (degrees < 67.5)
-            return "NE";
-        else if (degrees < 112.5)
-            return "E";
-        else if (degrees < 157.5)
-            return "SE";
-        else if (degrees < 202.5)
-            return "S";
-        else if (degrees < 247.5)
-            return "SW";
-        else if (degrees < 292.5)
-            return "W";
-        else
-            return "NW";
-    }
+    if (degrees >= 337.5 || degrees < 22.5)
+        return "N";
+    else if (degrees < 67.5)
+        return "NE";
+    else if (degrees < 112.5)
+        return "E";
+    else if (degrees < 157.5)
+        return "SE";
+    else if (degrees < 202.5)
+        return "S";
+    else if (degrees < 247.5)
+        return "SW";
+    else if (degrees < 292.5)
+        return "W";
+    else
+        return "NW";
 }
 
 // Actual weather command itself
