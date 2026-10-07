@@ -13,3 +13,4 @@ struct Command {
 
 extern const Command ping_command;
 extern const Command quote_command;
+extern const Command weather_command;

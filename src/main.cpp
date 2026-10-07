@@ -26,7 +26,11 @@ int main()
     // A list of slash commands to register with Discord
     std::vector<dpp::slashcommand> slash_commands;
     // A list of all commands to register (struct Command)
-    std::vector<Command> all_commands = {ping_command, quote_command};
+    std::vector<Command> all_commands = {
+        ping_command, 
+        quote_command,
+        weather_command
+    };
 
     for (const auto &cmd : all_commands) {
         // Match the command name to its handler in c_h map
